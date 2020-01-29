@@ -233,11 +233,12 @@ lane :ManuallyUpdateCodeSigning do |options|
   conf.load_configuration_file("Matchfile")
 
   git_url = conf.config_file_options[:git_url]
-  shallow_clone = false
+  shallow_clone = true
+  clone_branch_directly = options[:readonly].nil? ? true : options[:clone_branch_directly]
   branch = 'fastlane_certificates'
 
   storage_conf = lambda do
-    new_storage = Match::Storage.for_mode('git', { git_url: git_url, shallow_clone: shallow_clone, git_branch: branch, clone_branch_directly: false})
+    new_storage = Match::Storage.for_mode('git', { git_url: git_url, shallow_clone: shallow_clone, git_branch: branch, clone_branch_directly: clone_branch_directly})
     new_storage.download
     return new_storage
   end
