@@ -1,4 +1,5 @@
 $appName = File.basename(Dir['../*.xcworkspace'].first, '.*')
+$API_KEY_PATH="fastlane/api_key.json"
 
 require_relative 'fastlane/touchlane/lib/touchlane'
 require_relative 'managers/managers'
@@ -50,7 +51,7 @@ end
 
 private_lane :uploadToAppStore do |options|
   upload_to_app_store(
-    username: options[:username] || options[:apple_id],
+    api_key_path: $API_KEY_PATH,
     ipa: options[:ipa_path],
     force: true, # skip metainfo prompt
     skip_metadata: true,
@@ -201,8 +202,8 @@ lane :SyncSymbols do |options|
 
   xcodeproj_path = File.expand_path "../#{appName}.xcodeproj"
 
-  version_number = options[:version] || get_version_number(xcodeproj: xcodeproj_path, target: appName)
-  build_number = options[:build_number] || get_build_number(xcodeproj: xcodeproj_path)
+  version_number = options[:version] || "latest"
+  build_number = options[:build_number]
 
   if configuration.type.is_app_store
     download_dsyms(
@@ -312,7 +313,7 @@ def sync_code_signing_using_options(options)
 
   match(
     app_identifier: options[:app_identifier],
-    username: options[:username] || options[:apple_id],
+    api_key_path: $API_KEY_PATH,
     team_id: options[:team_id],
     type: options[:type],
     readonly: options[:readonly].nil? ? true : options[:readonly],
